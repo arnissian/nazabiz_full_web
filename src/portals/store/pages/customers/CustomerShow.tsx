@@ -1,0 +1,1 @@
+export { CustomerShow as default } from './CustomerCreate';

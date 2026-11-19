@@ -1,0 +1,1 @@
+export { StoreShow as default } from './StoreCreate';

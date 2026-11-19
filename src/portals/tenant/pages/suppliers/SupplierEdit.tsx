@@ -1,0 +1,1 @@
+export { SupplierEdit as default } from './SupplierCreate';

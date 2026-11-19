@@ -1,0 +1,56 @@
+/* Custom Fieldset Forms */
+.custom-fieldset {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px 10px 6px 10px;
+  position: relative;
+  background-color: #fff;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s ease;
+}
+
+.custom-fieldset:focus-within {
+  border-color: #00d2d3;
+  box-shadow: 0 0 0 2px rgba(0, 210, 211, 0.15);
+}
+
+.custom-fieldset legend {
+  font-size: 0.65rem;
+  color: #64748b;
+  float: none;
+  width: auto;
+  padding: 0 4px;
+  margin-bottom: 0;
+  margin-left: 0 !important;
+  text-align: left !important;
+  line-height: 1;
+}
+
+.custom-fieldset input, 
+.custom-fieldset select,
+.custom-fieldset textarea {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 2px 0 !important;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #334155;
+  width: 100%;
+  background: transparent;
+}
+
+/* Custom Buttons & Containers */
+.btn-turquoise {
+
+  border: none;
+}
+
+
+
+.section-box {
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  padding: 12px;
+}

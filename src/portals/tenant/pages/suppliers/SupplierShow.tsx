@@ -1,0 +1,1 @@
+export { SupplierShow as default } from './SupplierCreate';

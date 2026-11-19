@@ -1,0 +1,31 @@
+import { useCallback, useEffect, useState } from 'react';
+import axiosInstance from '../../../shared/services/api/axiosInterceptor';
+
+export const useStocks = (initialParams: any = { page: 1, per_page: 10 }) => {
+  const [stocks, setStocks] = useState<any[]>([]);
+  const [pagination, setPagination] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [params, setParams] = useState(initialParams);
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const r = await axiosInstance.get('/stocks', { params });
+      const p = r.data?.data;
+      setStocks(Array.isArray(p) ? p : p?.data || []);
+      setPagination(Array.isArray(p) ? null : p);
+    } catch (e: any) {
+      setError(e?.response?.data?.message || 'Erreur lors de la récupération des données');
+    } finally {
+      setLoading(false);
+    }
+  }, [params]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { stocks, pagination, loading, error, params, setParams, reFetch: fetchData };
+};
