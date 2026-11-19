@@ -19,6 +19,8 @@ import Units from '../../tenant/pages/units/Units';
 import Products from '../../tenant/pages/products/Products';
 import Users from '../../tenant/pages/users/Users';
 import Login from '../pages/auth/Login';
+import TenantPlans from '../pages/auth/TenantPlans';
+import TenantSignup from '../pages/auth/TenantSignup';
 import ProtectedRoute from './ProtectedRoute';
 import RoleAccessGate from '../components/common/RoleAccessGate';
 import TenantSettings from '../../tenant/pages/settings/TenantSettings';
@@ -127,6 +129,8 @@ export default function AppRoutes() {
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/login/otp" element={<LoginOtp />} />
+      <Route path="/signup" element={<TenantPlans />} />
+      <Route path="/signup/:planId" element={<TenantSignup />} />
       <Route path="/forgot-password" element={<PasswordRecovery step="email" />} />
       <Route path="/otp-verify" element={<PasswordRecovery step="otp" />} />
       <Route path="/password-reset" element={<PasswordRecovery step="reset" />} />

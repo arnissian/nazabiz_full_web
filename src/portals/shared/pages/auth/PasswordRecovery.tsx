@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState, type FormEvent } from 'react';
-import { ArrowLeft, LockKeyhole, Mail, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import axiosInstance from '../../services/api/axiosInterceptor';
@@ -11,6 +11,12 @@ import { TenantLogo } from '../../components/common/TenantLogo';
 type RecoveryStep = 'email' | 'otp' | 'reset';
 type RecoveryState = { email?: string; reset_token?: string };
 type RecoveryResponse = { status: number; message?: string; reset_token?: string };
+
+const RECOVERY_FAILURES: Record<RecoveryStep, string> = {
+  email: 'Impossible d’envoyer le code pour le moment. Veuillez réessayer plus tard.',
+  otp: 'Impossible de vérifier le code pour le moment. Veuillez réessayer plus tard.',
+  reset: 'Impossible de mettre à jour le mot de passe pour le moment. Veuillez réessayer plus tard.',
+};
 
 export default function PasswordRecovery({ step }: { step: RecoveryStep }) {
   const { tenantSettings } = useContext(AppContext);
@@ -24,6 +30,8 @@ export default function PasswordRecovery({ step }: { step: RecoveryStep }) {
   const [otp, setOtp] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,11 +49,13 @@ export default function PasswordRecovery({ step }: { step: RecoveryStep }) {
     return () => window.clearTimeout(timer);
   }, [resendTimer, step]);
 
-  const getErrorMessage = (requestError: unknown) => {
+  const getErrorMessage = (requestError: unknown, fallback: string) => {
     if (axios.isAxiosError<{ message?: string }>(requestError)) {
-      return requestError.response?.data?.message ?? 'Erreur serveur, veuillez réessayer.';
+      const status = requestError.response?.status;
+      if (!status || status >= 500) return fallback;
+      return requestError.response?.data?.message ?? fallback;
     }
-    return requestError instanceof Error ? requestError.message : 'Une erreur inattendue est survenue.';
+    return requestError instanceof Error ? requestError.message : fallback;
   };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -65,12 +75,18 @@ export default function PasswordRecovery({ step }: { step: RecoveryStep }) {
     try {
       if (step === 'email') {
         const response = await axiosInstance.post<RecoveryResponse>('/auth/email-verify', { email });
-        if (response.data.status !== 200) throw new Error(response.data.message || 'Impossible d’envoyer le code.');
+        if (response.data.status !== 200) {
+          throw new Error(response.data.status >= 500
+            ? RECOVERY_FAILURES.email
+            : response.data.message || RECOVERY_FAILURES.email);
+        }
         navigate('/otp-verify', { state: { email } });
       } else if (step === 'otp') {
         const response = await axiosInstance.post<RecoveryResponse>('/auth/otp-verify', { email: emailFromState, otp });
         if (response.data.status !== 200 || !response.data.reset_token) {
-          throw new Error(response.data.message || 'Code de vérification invalide.');
+          throw new Error(response.data.status >= 500
+            ? RECOVERY_FAILURES.otp
+            : response.data.message || 'Code de vérification invalide.');
         }
         navigate('/password-reset', {
           state: { email: emailFromState, reset_token: response.data.reset_token },
@@ -85,11 +101,15 @@ export default function PasswordRecovery({ step }: { step: RecoveryStep }) {
           password_confirmation: passwordConfirmation,
           reset_token: resetToken,
         });
-        if (response.data.status !== 200) throw new Error(response.data.message || 'La réinitialisation a échoué.');
+        if (response.data.status !== 200) {
+          throw new Error(response.data.status >= 500
+            ? RECOVERY_FAILURES.reset
+            : response.data.message || RECOVERY_FAILURES.reset);
+        }
         navigate('/login', { replace: true, state: { passwordReset: true } });
       }
     } catch (requestError: unknown) {
-      setError(getErrorMessage(requestError));
+      setError(getErrorMessage(requestError, RECOVERY_FAILURES[step]));
     } finally {
       setLoading(false);
     }
@@ -101,10 +121,14 @@ export default function PasswordRecovery({ step }: { step: RecoveryStep }) {
     setError('');
     try {
       const response = await axiosInstance.post<RecoveryResponse>('/auth/email-verify', { email: emailFromState });
-      if (response.data.status !== 200) throw new Error(response.data.message || 'Impossible de renvoyer le code.');
+      if (response.data.status !== 200) {
+        throw new Error(response.data.status >= 500
+          ? RECOVERY_FAILURES.email
+          : response.data.message || RECOVERY_FAILURES.email);
+      }
       setResendTimer(60);
     } catch (requestError: unknown) {
-      setError(getErrorMessage(requestError));
+      setError(getErrorMessage(requestError, RECOVERY_FAILURES.email));
     } finally {
       setLoading(false);
     }
@@ -158,11 +182,51 @@ export default function PasswordRecovery({ step }: { step: RecoveryStep }) {
                     <>
                       <fieldset className="custom-fieldset mb-3">
                         <legend className="d-flex align-items-center gap-1"><LockKeyhole size={12} />Nouveau mot de passe <span className="text-danger">*</span></legend>
-                        <input type="password" autoComplete="new-password" minLength={8} required value={password} onChange={event => setPassword(event.target.value)} disabled={loading} />
+                        <div className="d-flex align-items-center gap-2">
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            autoComplete="new-password"
+                            minLength={8}
+                            required
+                            value={password}
+                            onChange={event => setPassword(event.target.value)}
+                            disabled={loading}
+                            style={{ flex: 1, minWidth: 0 }}
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-link p-1 text-secondary"
+                            onClick={() => setShowPassword(current => !current)}
+                            aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                            aria-pressed={showPassword}
+                          >
+                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
+                        </div>
                       </fieldset>
                       <fieldset className="custom-fieldset mb-3">
                         <legend className="d-flex align-items-center gap-1"><LockKeyhole size={12} />Confirmer le mot de passe <span className="text-danger">*</span></legend>
-                        <input type="password" autoComplete="new-password" minLength={8} required value={passwordConfirmation} onChange={event => setPasswordConfirmation(event.target.value)} disabled={loading} />
+                        <div className="d-flex align-items-center gap-2">
+                          <input
+                            type={showPasswordConfirmation ? 'text' : 'password'}
+                            autoComplete="new-password"
+                            minLength={8}
+                            required
+                            value={passwordConfirmation}
+                            onChange={event => setPasswordConfirmation(event.target.value)}
+                            disabled={loading}
+                            style={{ flex: 1, minWidth: 0 }}
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-link p-1 text-secondary"
+                            onClick={() => setShowPasswordConfirmation(current => !current)}
+                            aria-label={showPasswordConfirmation ? 'Masquer la confirmation du mot de passe' : 'Afficher la confirmation du mot de passe'}
+                            aria-pressed={showPasswordConfirmation}
+                          >
+                            {showPasswordConfirmation ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
+                        </div>
                       </fieldset>
                       {passwordConfirmation && (
                         <p className={password === passwordConfirmation ? 'text-success small' : 'text-danger small'}>

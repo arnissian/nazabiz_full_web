@@ -1,0 +1,268 @@
+.tenant-plans-page {
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding: 2rem 0 3.5rem;
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(24, 24, 95, 0.08), transparent 34rem),
+    #f7f8fc;
+}
+
+.tenant-plans-container {
+  max-width: 1120px;
+}
+
+.tenant-plans-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.tenant-plans-back:hover {
+  color: #18185f;
+}
+
+.tenant-plans-step,
+.tenant-plans-step-spacer {
+  width: 5rem;
+}
+
+.tenant-plans-step {
+  width: auto;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.tenant-plans-hero {
+  max-width: 680px;
+  margin: 3rem auto 2.5rem;
+}
+
+.tenant-plans-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: #fff3e4;
+  color: #94500a;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.tenant-plans-hero h1 {
+  margin: 1.1rem 0 0.6rem;
+  color: #111827;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.tenant-plans-hero p {
+  margin: 0;
+  color: #64748b;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.tenant-plans-grid {
+  align-items: stretch;
+}
+
+.tenant-plan-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.15rem;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.05);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.tenant-plan-card:hover {
+  transform: translateY(-3px);
+  border-color: #b7c1ed;
+  box-shadow: 0 18px 38px rgba(24, 24, 95, 0.1);
+}
+
+.tenant-plan-card.is-recommended {
+  border: 2px solid #18185f;
+  box-shadow: 0 16px 40px rgba(24, 24, 95, 0.12);
+}
+
+.tenant-plan-badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: #18185f;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.tenant-plan-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.tenant-plan-icon {
+  display: inline-flex;
+  flex: 0 0 2.8rem;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 0.9rem;
+  background: #eef0ff;
+  color: #18185f;
+}
+
+.tenant-plan-icon.is-warm {
+  background: #fff3e4;
+  color: #b96a0d;
+}
+
+.tenant-plan-heading h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.tenant-plan-heading p {
+  margin: 0.35rem 0 0;
+  color: #64748b;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.tenant-plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+}
+
+.tenant-plan-price strong {
+  color: #18185f;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.tenant-plan-price span {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.tenant-plan-divider {
+  height: 1px;
+  margin: 1.25rem 0;
+  background: #edf0f5;
+}
+
+.tenant-plan-features {
+  display: grid;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.tenant-plan-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  color: #334155;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.tenant-plan-feature svg {
+  flex: 0 0 auto;
+  margin-top: 0.1rem;
+  color: #208a32;
+}
+
+.tenant-plan-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.9rem;
+  margin-top: auto;
+  border: 1px solid #18185f;
+  border-radius: 0.75rem;
+  background: #fff;
+  color: #18185f;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.tenant-plan-action:hover,
+.tenant-plan-action.is-recommended {
+  background: #18185f;
+  color: #fff;
+}
+
+.tenant-plans-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  min-height: 12rem;
+  color: #64748b;
+}
+
+.tenant-plans-error {
+  max-width: 38rem;
+  min-height: auto;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  border-radius: 0.9rem;
+  background: #fff;
+  color: #991b1b;
+}
+
+.tenant-plans-footer {
+  margin: 1.75rem 0 0;
+  color: #64748b;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@media (max-width: 575.98px) {
+  .tenant-plans-page {
+    padding-top: 1.25rem;
+  }
+
+  .tenant-plans-hero {
+    margin: 2rem auto 1.75rem;
+  }
+
+  .tenant-plan-card {
+    padding: 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tenant-plan-card,
+  .tenant-plan-action {
+    transition: none;
+  }
+}

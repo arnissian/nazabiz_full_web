@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { LockKeyhole, Mail, LogIn, KeyRound } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, Mail, LogIn, KeyRound } from "lucide-react";
 import { AppContext } from "../../context/AppContext";
 import { Spinner } from "../../components/common/Spinner";
 import { useIsAuthenticated } from "../../utils/auth/useIsAuthenticated";
@@ -16,6 +16,7 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // ✅ ajout du state loading
 
@@ -29,7 +30,7 @@ export default function Login() {
 
     setLoading(true); // ✅ active le spinner
     try {
-      const result = await login(email, password);
+      const result = await login(email.trim(), password);
       if (result.authenticated) {
         const permissions = result.permissions || [];
         nav(getInitialRoute(permissions, result.roles, result.activeStoreId), { replace: true });
@@ -46,7 +47,7 @@ export default function Login() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && e.target instanceof HTMLInputElement) {
       handleLogin();
     }
   };
@@ -92,6 +93,11 @@ export default function Login() {
                     Votre mot de passe a été réinitialisé. Vous pouvez vous connecter.
                   </div>
                 )}
+                {location.state?.signupCompleted && (
+                  <div className="alert alert-success py-2 mb-3 fs-7" role="status">
+                    Votre entreprise est créée. Vous pouvez vous connecter.
+                  </div>
+                )}
 
                 <fieldset className="custom-fieldset mb-3">
                   <legend className="d-flex align-items-center gap-1">
@@ -110,13 +116,25 @@ export default function Login() {
                   <legend className="d-flex align-items-center gap-1">
                     <LockKeyhole size={12} /> Mot de passe <span className="text-danger">*</span>
                   </legend>
-                  <input
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={loading} // ✅ désactive pendant le chargement
-                  />
+                  <div className="d-flex align-items-center gap-2">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={loading}
+                      style={{ flex: 1, minWidth: 0 }}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-link p-1 text-secondary"
+                      onClick={() => setShowPassword(current => !current)}
+                      aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                      aria-pressed={showPassword}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                 </fieldset>
                 <div className="text-end mt-2">
                   <Link to="/forgot-password" className="small">Mot de passe oublié ?</Link>
@@ -136,7 +154,7 @@ export default function Login() {
                     Se connecter
                   </button>
                   <div className="text-center small mt-3">
-                    Nouvelle entreprise ? <a href={import.meta.env.VITE_WEB_SIGNUP_URL || 'http://localhost:5175'}>Créer un compte</a>
+                    Nouvelle entreprise ? <Link to="/signup">Créer un compte</Link>
                   </div>
                 </div>
               </div>
